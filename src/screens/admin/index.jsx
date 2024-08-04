@@ -8,6 +8,7 @@ const { Header, Content, Sider } = Layout;
 import { useCurrentUser } from "../../hooks/query/user"
 import CreateMovieForm from "../../components/Admin/CreateMovieForm";
 import CreateTheatreForm from "../../components/Admin/CreateTheatreForm";
+import CreateMovieScheduleForm from "../../components/Admin/CreateMovieScheduleForm";
 
 const AdminPage = () => {
     const navigate = useNavigate()
@@ -54,7 +55,7 @@ const AdminPage = () => {
                     >
                         {selectedKey === 'movies' && (<div><CreateMovieForm /></div>)}
                         {selectedKey === 'theatres' && (<div><CreateTheatreForm /></div>)}
-                        {selectedKey === 'movieSchedules' && <h1>Movie Schedules</h1>}
+                        {selectedKey === 'movieSchedules' && (<div><CreateMovieScheduleForm /></div>)}
                     </Content>
                 </Layout>
             </Layout>
