@@ -21,7 +21,8 @@ export const useGetMovieById = (movieId) => {
             return data.data
         }
     })
-    return { ...query, title: query?.data?.title, description: query?.data?.description, language: query?.data?.language}
+    return { ...query, movie: query?.data }
+    // return { ...query, title: query?.data?.title, description: query?.data?.description, language: query?.data?.language}
 }
 
 

@@ -3,13 +3,12 @@ import { useState } from "react";
 import { useGetMovieById, useGetMovieSchedule } from "../../hooks/query/movie"
 import { Card, Button, Flex } from 'antd';
 import MovieScheduleBooking from "./MovieScheduleBooking";
-import { useGetMovieScheduleBookingUrl } from "../../hooks/query/movieSchedule";
 
 const { Meta } = Card;
 
 const MovieById = () => {
     const { id } = useParams()
-    const { title, description, language, isLoading } = useGetMovieById(id)
+    const { movie, isLoading } = useGetMovieById(id)
     const { schedule: movieScheduleData, isLoading: movieScheduleLoading } = useGetMovieSchedule(id)
 
     const [selectedSchedule, setSelectedSchedule] = useState(null)
@@ -30,9 +29,9 @@ const MovieById = () => {
                 <Card
                     hoverable
                     style={{ width: 320 }}
-                    cover={<img alt="example" src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" />}
+                    cover={<img alt="example" src={movie.imageUrl} />}
                 >
-                    <Meta title={title} description={description} />
+                    <Meta title={movie.title} description={movie.language} />
                 </Card>
             </Flex>
             <br />

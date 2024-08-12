@@ -40,7 +40,7 @@ const HomePage = () => {
                     <div className="header-left">
                         <img
                             alt="bookmyshow"
-                            src="/public/bookmyshow.png"
+                            src="/bookmyshow.png"
                             style={{width: "138px", height: "55px", marginTop: "8px"}}
                         />
                         <Input placeholder="Search for Movies" prefix={<SearchOutlined style={{margin: "0 8px 0 4px"}}/>} style={{height: "35px", width: "480px"}}/>
@@ -75,15 +75,16 @@ const HomePage = () => {
                         <Row>
                             {movies && movies?.map((movie) => 
                                 <Col xs={24} sm={24} md={12} lg={8} key={movie._id}>
-                                    <div onClick={(e) => navigate(`/movie/${movie._id}`)}>
+                                    {/* <div onClick={(e) => navigate(`/movie/${movie._id}`)}> */}
                                         <Card
                                             hoverable
-                                            style={{ width: 320 }}
-                                            cover={<img alt="example" src="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png" />}
+                                            style={{ width: 250 }}
+                                            cover={<img alt="example" src={movie.imageUrl} />}
+                                            onClick={(e) => navigate(`/movie/${movie._id}`)}
                                         >
-                                            <Meta title={movie.title} description={movie.description} />
+                                            <Meta title={movie.title} description={movie.genre} />
                                         </Card>
-                                    </div>
+                                    {/* </div> */}
                                 </Col>
                             )}
                         </Row>
