@@ -1,23 +1,31 @@
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { useState } from "react";
 import { useGetMovieById, useGetMovieSchedule } from "../../hooks/query/movie"
 import { Card, Button, Flex } from 'antd';
 import MovieScheduleBooking from "./MovieScheduleBooking";
-
-const { Meta } = Card;
+import { useCurrentUser } from "../../hooks/query/user";
+import CopyCard from "./CopyCard";
 
 const MovieById = () => {
+    const { user } = useCurrentUser()
+    const navigate = useNavigate()
     const { id } = useParams()
     const { movie, isLoading } = useGetMovieById(id)
     const { schedule: movieScheduleData, isLoading: movieScheduleLoading } = useGetMovieSchedule(id)
 
-    const [selectedSchedule, setSelectedSchedule] = useState(null)
+    // const [selectedSchedule, setSelectedSchedule] = useState(null)
 
     // const bookingQueryData = useGetMovieScheduleBookingUrl(selectedSchedule)
     // console.log('Booking Data==>', bookingQueryData)
 
     const handleBooking = (scheduleId) => {
-        setSelectedSchedule(scheduleId)
+        if(user) {
+            navigate('/copy_card', { state: {scheduleId}})
+        }
+        else {
+            navigate('/login_error')
+            setTimeout(() => navigate('/signin'), 2 * 1000)
+        }
     }
 
     if(isLoading || movieScheduleLoading)
@@ -53,8 +61,10 @@ const MovieById = () => {
                                 style: 'currency',
                                 currency: 'INR',
                             })}</p>
-                            <Button onClick={eve => handleBooking(e._id)}>Book Show</Button>
-                            {selectedSchedule && <MovieScheduleBooking data={selectedSchedule} />}
+                            <Button onClick={eve => {
+                                handleBooking(e._id)
+                            }}>Book Show</Button>
+                            {/* {selectedSchedule && <MovieScheduleBooking data={selectedSchedule} />} */}
                         </Card>
                     </div>)}
                 </Flex>

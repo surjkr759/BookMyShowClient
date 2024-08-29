@@ -45,3 +45,12 @@
     font-size: 17px;
     margin-bottom: 20px;
 }
+
+.container {
+    height: 80vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+}
