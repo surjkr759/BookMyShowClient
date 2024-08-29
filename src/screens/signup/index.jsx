@@ -1,20 +1,21 @@
 import { Input, Checkbox, Form, Button } from "antd"
 import { useCallback, useState } from 'react'
 
-import "./style.css"
-import { useSigninUser } from "../../hooks/mutation/user"
+import "../signin/style.css"
+import { useSignUpUser } from "../../hooks/mutation/user"
 
-const SignInScreen = () => {
-    const { mutateAsync: signInUserAsync } = useSigninUser();
-    //Important: Above fn name by default is mutateAsync. You can rename it like above
 
+const SignUpScreen = () => {
+    const { mutateAsync: signUpUserAsync } = useSignUpUser();
+    
     const handleFormSubmit = useCallback(async (values) => {
+        const firstName = values.firstName
+        const lastName = values.lastName
         const email = values.email
         const password = values.password
 
-        await signInUserAsync({ email, password })
-    }, [signInUserAsync])
-
+        await signUpUserAsync({ firstName, lastName, email, password })
+    }, [signUpUserAsync])
 
     const onFinishFailed = (errorInfo) => {
         // console.log('Failed:', errorInfo);
@@ -22,13 +23,6 @@ const SignInScreen = () => {
 
     return (
         <div className="signin-container">
-            {/* <form onSubmit={handleFormSubmit} className="form-container">
-                <label htmlFor="email">Email Address</label>
-                <Input value={email} onChange={(e) => setEmail(e.target.value)} id="email" type="email" required />
-                <label htmlFor="password" style={{marginTop: "20px"}}>Password</label>
-                <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" required />
-                <Button htmlType="submit" disabled={!email || !password} type="primary">Sign In</Button>
-            </form> */}
             <Form
                 name="basic"
                 labelCol={{
@@ -47,6 +41,32 @@ const SignInScreen = () => {
                 onFinishFailed={onFinishFailed}
                 autoComplete="off"
             >
+                <Form.Item
+                    label="First Name"
+                    name="firstName"
+                    rules={[
+                        {
+                        required: true,
+                        message: 'Please input your first name!',
+                        },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+
+                <Form.Item
+                    label="Last Name"
+                    name="lastName"
+                    rules={[
+                        {
+                        required: true,
+                        message: 'Please input your last name!',
+                        },
+                    ]}
+                >
+                    <Input />
+                </Form.Item>
+
                 <Form.Item
                     label="Email"
                     name="email"
@@ -74,17 +94,6 @@ const SignInScreen = () => {
                 </Form.Item>
 
                 <Form.Item
-                    name="remember"
-                    valuePropName="checked"
-                    wrapperCol={{
-                        offset: 8,
-                        span: 16,
-                    }}
-                >
-                    <Checkbox>Remember me</Checkbox>
-                </Form.Item>
-
-                <Form.Item
                     wrapperCol={{
                         offset: 8,
                         span: 16,
@@ -94,15 +103,9 @@ const SignInScreen = () => {
                         Submit
                     </Button>
                 </Form.Item>
-
-                <div style={{textAlign: "center", fontSize: "15px"}}>
-                    Don't have an account?<a href="/signup"> Create account</a>
-                </div>
-
             </Form>
         </div>
-        
     )
 }
 
-export default SignInScreen
+export default SignUpScreen

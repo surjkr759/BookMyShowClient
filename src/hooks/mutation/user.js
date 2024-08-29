@@ -28,3 +28,33 @@ export const useSigninUser = () => {
     })
     return mutation
 }
+
+export const useSignUpUser = () => {
+    const queryClient = useQueryClient()
+    const navigate = useNavigate()
+
+    const mutation = useMutation({
+        mutationFn: async function({ firstName, lastName, email, password }) {
+
+            const data = await apiV1Instance.post('/auth/signup', {
+                firstName,
+                lastName,
+                email,
+                password
+            })
+            return data
+        },
+        onSuccess: async ({data}) => {  //the params need to be data only
+            console.log('Data==>', data)
+            const token = data.data.token
+            localStorage.setItem('token', token)
+            await queryClient.invalidateQueries({ queryKey: ['user']})
+            navigate("/")
+        },
+        onError: ({message}) => {
+            
+        }
+
+    })
+    return mutation
+}
