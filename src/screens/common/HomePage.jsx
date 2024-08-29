@@ -5,7 +5,7 @@ import { Col, Row, Card, Spin, Flex, Input, Button } from 'antd';
 import { LoadingOutlined, SearchOutlined, DownOutlined } from '@ant-design/icons';
 import '../../App.css';
 import { useState } from "react";
-import userImage from '../../assets/user.png';
+import HomepageProfileMenu from "./HomepageProfileMenu";
 
 const { Meta } = Card;
 
@@ -54,8 +54,7 @@ const HomePage = () => {
                             {user?.firstName ? 
                                 (
                                     <div className="profile" >
-                                        <img alt="user" src={userImage} width="40px" height="40px" />
-                                        <span>Hi, {user?.firstName}</span>
+                                        <span><HomepageProfileMenu text={user?.firstName} role={user?.role}/></span>
                                     </div>
                                 ) : 
                                 <Button type="primary" onClick={e => navigate('/signin')} danger>
@@ -74,8 +73,7 @@ const HomePage = () => {
                     <div className="movies">
                         <Row>
                             {movies && movies?.map((movie) => 
-                                <Col xs={24} sm={24} md={12} lg={8} key={movie._id}>
-                                    {/* <div onClick={(e) => navigate(`/movie/${movie._id}`)}> */}
+                                <Col xs={24} sm={24} md={12} lg={6} key={movie._id}>
                                         <Card
                                             hoverable
                                             style={{ width: 250 }}
@@ -84,7 +82,6 @@ const HomePage = () => {
                                         >
                                             <Meta title={movie.title} description={movie.genre} />
                                         </Card>
-                                    {/* </div> */}
                                 </Col>
                             )}
                         </Row>

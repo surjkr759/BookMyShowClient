@@ -16,7 +16,6 @@
 .header-right {
     display: flex;
     align-items: center;
-    gap: 15px;
 }
 
 .pointer {
@@ -40,4 +39,9 @@
 
 .movies {
     margin-top: 20px;
+}
+
+.movieDetails {
+    font-size: 17px;
+    margin-bottom: 20px;
 }

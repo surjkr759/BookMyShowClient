@@ -6,8 +6,6 @@ import HomePage from './screens/common/HomePage'
 import MovieById from './screens/common/MovieById'
 
 function App() {
-
-  const {user} = useCurrentUser()
   
   return (
     <Routes>
