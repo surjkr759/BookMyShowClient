@@ -5,6 +5,7 @@ import { Card, Button, Flex } from 'antd';
 import MovieScheduleBooking from "./MovieScheduleBooking";
 import { useCurrentUser } from "../../hooks/query/user";
 import CopyCard from "./CopyCard";
+import { useGetMovieScheduleBookingUrl } from "../../hooks/query/movieSchedule";
 
 const MovieById = () => {
     const { user } = useCurrentUser()
@@ -20,6 +21,7 @@ const MovieById = () => {
 
     const handleBooking = (scheduleId) => {
         if(user) {
+            // setSelectedSchedule(scheduleId)
             navigate('/copy_card', { state: {scheduleId}})
         }
         else {
