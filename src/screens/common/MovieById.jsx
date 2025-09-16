@@ -57,7 +57,7 @@ const MovieById = () => {
                 <Flex gap="middle" wrap style={{margin: "-30px 0 0 40px"}}>
                     {movieScheduleData && movieScheduleData.map(e => <div key={e._id}>
                         <Card style={{ width: 300 }}>
-                            <p><b>{e.theatre.theatreName}, {e.theatre.location.address}</b></p>
+                            <p><b>{e.theatre.theatreName}</b></p>
                             <p>{new Date(e.startTime).toLocaleString()}</p>
                             <p>Price: {e.price.toLocaleString('en-Us', {
                                 style: 'currency',
