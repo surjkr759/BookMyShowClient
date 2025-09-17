@@ -6,6 +6,8 @@ import HomePage from './screens/common/HomePage'
 import MovieById from './screens/common/MovieById'
 import Login_error from './screens/common/Login_error'
 import CopyCard from './screens/common/CopyCard'
+import PaymentSuccess from './screens/common/PaymentSuccess'
+import MyBookings from './screens/common/MyBookings'
 
 function App() {
   
@@ -19,6 +21,8 @@ function App() {
       {/* <Route path='/movie/:id/schedule' element={<MovieById />} /> */}
       <Route path='/login_error' element={<Login_error />} />
       <Route path='/copy_card' element={<CopyCard />} />
+      <Route path="/success" element={<PaymentSuccess />} />
+      <Route path="/bookings" element={<MyBookings />} />
     </Routes>
   )
 }
