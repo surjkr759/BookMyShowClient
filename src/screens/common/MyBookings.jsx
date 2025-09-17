@@ -63,6 +63,13 @@ const MyBookings = () => {
         setBookings(data?.data?.bookings || []);
       } catch (err) {
         console.error(err);
+        // If not authenticated, send to sign-in
+        if (err?.response?.status === 401) {
+            message.warning('Please sign in to view your bookings.')
+            window.location.href = '/signin'
+            return
+        }
+        message.error('Failed to load bookings')
       } finally {
         setLoading(false);
       }

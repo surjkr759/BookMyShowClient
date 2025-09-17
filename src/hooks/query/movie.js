@@ -36,3 +36,17 @@ export const useGetMovieSchedule = (movieId) => {
     })
     return { ...query, schedule: query?.data?.schedule}
 }
+
+
+export const useSearchMovies = (q) => {
+  return useQuery({
+    queryKey: ['movies', 'search', q],
+    queryFn: async () => {
+      if (!q) return [];
+      const { data } = await apiV1Instance.get('/movie/search', { params: { q } });
+      return data?.data?.movies ?? [];
+    },
+    enabled: !!q,
+    staleTime: 30_000
+  });
+};

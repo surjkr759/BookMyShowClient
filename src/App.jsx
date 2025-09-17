@@ -21,8 +21,8 @@ function App() {
       {/* <Route path='/movie/:id/schedule' element={<MovieById />} /> */}
       <Route path='/login_error' element={<Login_error />} />
       <Route path='/copy_card' element={<CopyCard />} />
-      <Route path="/success" element={<PaymentSuccess />} />
-      <Route path="/bookings" element={<MyBookings />} />
+      <Route path='/success' element={<PaymentSuccess />} />
+      <Route path='/bookings' element={<MyBookings />} />
     </Routes>
   )
 }

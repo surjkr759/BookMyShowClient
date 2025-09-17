@@ -1,55 +1,50 @@
-import React, { useState } from 'react';
-import { SettingOutlined } from '@ant-design/icons';
-import { Menu } from 'antd';
-import { useNavigate } from "react-router-dom"
+import React from 'react'
+import { Dropdown, Avatar, Space, Typography } from 'antd'
+import { UserOutlined, LogoutOutlined, SettingOutlined, ProfileOutlined  } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
 
+const { Text } = Typography
 
-const HomepageProfileMenu = (props) => {
-    const navigate = useNavigate()
-    const [selectedKey, setSelectedKey] = useState('')
-    
-    const items = [
-        {
-            label: `Hi, ${props.text}`,
-            key: 'SubMenu',
-            icon: <SettingOutlined />,
-            children: [
-                {
-                    key: 'editProfile',
-                    label: 'Edit Profile',
-                },
-                `${props.role}` === 'admin' ?
-                {
-                    key: 'admin',
-                    label: 'Admin Actions',
-                } : '',
-                {
-                    key: 'logout',
-                    label: 'Logout',
-                },
-                
-            ]
-        }
-    ]
+const HomepageProfileMenu = ({ user, onLogout }) => {
+  const navigate = useNavigate()
 
-    const logout = () => {
-        localStorage.clear()
-        window.location.href='/'
-    }
+  const items = [
+    {
+      key: 'bookings',
+      icon: <ProfileOutlined  />,
+      label: 'My Bookings',
+      onClick: () => navigate('/bookings'),
+    },
+    {
+      type: 'divider',
+    },
+    {
+      key: 'profile',
+      icon: <SettingOutlined />,
+      label: 'Edit Profile',
+      onClick: () => navigate('/profile'),
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined style={{ color: '#ff4d4f' }} />,
+      label: <span style={{ color: '#ff4d4f' }}>Logout</span>,
+      onClick: onLogout,
+    },
+  ]
 
-    return (
-        <div>
-            <Menu 
-            mode="vertical" 
-            items={items}
-            onClick={(e) => setSelectedKey(e.key)}
-            />
-
-            {selectedKey === 'editProfile' && console.log('Edit Profile selected')}
-            {selectedKey === 'admin' && navigate('/admin')}
-            {selectedKey === 'logout' && logout()}
-        </div>
-    )
+  return (
+    <Dropdown
+      trigger={['click']}
+      menu={{ items }}
+      placement='bottomRight'
+      arrow
+    >
+      <Space style={{ cursor: 'pointer' }}>
+        <Avatar size="small" icon={<UserOutlined />} />
+        <Text strong>Hi, {user?.firstName || user?.email || 'User'}</Text>
+      </Space>
+    </Dropdown>
+  )
 }
 
-export default HomepageProfileMenu;
+export default HomepageProfileMenu
