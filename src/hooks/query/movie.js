@@ -1,15 +1,19 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiV1Instance } from "../../api"
+import { useCity } from '../../context/CityContext'
 
-export const useGetAllMovies = () => {
-    const query = useQuery({
-        queryKey: ['movies'],
-        queryFn: async () => {
-            const { data } = await apiV1Instance.get(`/movie`)
-            return data.data
-        }
-    })
-    return { ...query, movies: query?.data?.movies, page: query?.data?.page}
+export const useGetAllMovies = (city) => {
+  return useQuery({
+    queryKey: ["movies", city ?? "ALL"],
+    queryFn: async () => {
+      const params = city ? { city } : {};
+      const res = await apiV1Instance.get("/movie", { params });
+      return res?.data?.data?.movies ?? [];
+    },
+    enabled: true,       
+    staleTime: 60 * 1000,
+    gcTime: 5 * 60 * 1000,
+  });
 }
 
 
@@ -26,27 +30,29 @@ export const useGetMovieById = (movieId) => {
 }
 
 
-export const useGetMovieSchedule = (movieId) => {
-    const query = useQuery({
-        queryKey: ['movies', 'schedule', movieId],
-        queryFn: async () => {
-            const { data } = await apiV1Instance.get(`/movie/${movieId}/schedule`)
-            return data.data
-        }
-    })
-    return { ...query, schedule: query?.data?.schedule}
+export const useGetMovieSchedule = (movieId, city) => {
+  return useQuery({
+    queryKey: ['movieSchedule', movieId ?? null, city ?? null],
+    queryFn: async () => {
+      const res = await apiV1Instance.get("/movieSchedule", {
+        params: { movieId, city },
+      });
+      return res?.data?.data?.schedules
+          ?? res?.data?.data?.movieSchedules
+          ?? [];
+    },
+    enabled: Boolean(movieId && city),
+  })
 }
 
-
-export const useSearchMovies = (q) => {
+export const useSearchMovies = (q, city) => {
   return useQuery({
-    queryKey: ['movies', 'search', q],
+    queryKey: ["movie-search", { q, city }],
     queryFn: async () => {
-      if (!q) return [];
-      const { data } = await apiV1Instance.get('/movie/search', { params: { q } });
-      return data?.data?.movies ?? [];
+      const res = await apiV1Instance.get("/movie/search", { params: { q, city } });
+      return res?.data?.data?.movies ?? [];
     },
-    enabled: !!q,
-    staleTime: 30_000
+    enabled: !!q && !!city,
+    staleTime: 30_000,
   });
 };

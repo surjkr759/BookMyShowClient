@@ -11,3 +11,14 @@ export const useGetAllTheatres = () => {
     })
     return { ...query, theatres: query?.data?.theatres, page: query?.data?.page }
 }
+
+export const useGetAllCities = () => {
+  return useQuery({
+    queryKey: ['cities'],
+    queryFn: async () => {
+      const { data } = await apiV1Instance.get('/theatre/cities');
+      return data?.data?.cities ?? [];
+    },
+    staleTime: 60_000
+  });
+};

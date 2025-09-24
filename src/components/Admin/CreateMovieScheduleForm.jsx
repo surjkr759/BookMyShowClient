@@ -2,6 +2,8 @@ import { Button, Input, message, Select } from "antd"
 import { useCallback, useState } from "react"
 import { useGetAllTheatres } from "../../hooks/query/theatre"
 import { useGetAllMovies } from "../../hooks/query/movie"
+import { useQueryClient } from "@tanstack/react-query";
+import { useCity } from "../../context/CityContext";
 import DatePicker from "react-datepicker";
 
 import "react-datepicker/dist/react-datepicker.css";
@@ -15,64 +17,65 @@ const CreateMovieScheduleForm = () => {
     const [selectedTheatreId, setSelectedTheatreId] = useState('');
     const [price, setPrice] = useState(0);
 
+    const queryClient = useQueryClient();
+    const { city } = useCity?.() || {};
+
     const { theatres, isLoading: theatreLoading } = useGetAllTheatres()
-    const { movies, isLoading: movieLoading } = useGetAllMovies()
-    const { mutateAsync: createMovieScheduleAsync} = useCreateMovieSchedule()
-
-
-    console.log('==> ', movies)
+    const { data: movies = [], isLoading: movieLoading } = useGetAllMovies()
+    const { mutateAsync: createMovieScheduleAsync, isPending, isLoading } = useCreateMovieSchedule();
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault()
-        await createMovieScheduleAsync({
-            movieId: selectedMovieId,
-            theatreId: selectedTheatreId,
-            startTime: startDate.toISOString(),
-            price: parseInt(price)
-        })
+        try {
+            await createMovieScheduleAsync({
+                movieId: selectedMovieId,
+                theatreId: selectedTheatreId,
+                startTime: startDate.toISOString(),
+                price: Number(price),
+            });
 
-        messageApi.info(`Movie Schedule Created Success`)
+            queryClient.invalidateQueries({ queryKey: ["movieSchedule"] });
+            if (selectedMovieId) {
+                queryClient.invalidateQueries({ queryKey: ["movieSchedule", { movieId: selectedMovieId, city }] });
+                queryClient.invalidateQueries({ queryKey: ["movie-schedules", { movieId: selectedMovieId, city }] }); // if used anywhere
+                queryClient.invalidateQueries({ queryKey: ["movies", city ?? "ALL"] });
+            }
 
-        setStartDate(new Date())
-        setSelectedMovieId('')
-        setSelectedTheatreId('')
-        setPrice(0)
-    }, [createMovieScheduleAsync, selectedMovieId, selectedTheatreId, startDate, price])
+            messageApi.success('Schedule created');
+            setSelectedMovieId('');
+            setSelectedTheatreId('');
+            setPrice('');
+            setStartDate(new Date());
+        } catch (err) {
+            const msg = err?.response?.data?.error || 'Failed to create schedule';
+            messageApi.error(String(msg));
+        }
+    }, [createMovieScheduleAsync, messageApi, selectedMovieId, selectedTheatreId, startDate, price, queryClient, city])
 
     return (
         <>
             {contextHolder}
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 8, maxWidth: 480 }}>
                 <Select
-                    value={selectedTheatreId}
-                    onChange={(e) => setSelectedTheatreId(e)}
-                    style={{ width: '100%', marginBottom: '7px' }}
-                    options={theatres?.map((e) => ({ value: e._id, label: e.theatreName }))}
-                    loading={theatreLoading}
-                />
-                <Select
-                    value={selectedMovieId}
-                    onChange={(e) => setSelectedMovieId(e)}
-                    style={{ width: '100%', marginBottom: '7px' }}
-                    options={movies?.map((e) => ({ value: e._id, label: e.title }))}
+                    value={selectedMovieId || undefined}
+                    onChange={setSelectedMovieId}
+                    placeholder="Select movie"
                     loading={movieLoading}
+                    options={(movies || []).map(m => ({ 
+                        value: m._id,
+                        label: m.title || m.name || m.movieName || "Untitled"
+                     }))}
                 />
-                <DatePicker
-                    selected={startDate}
-                    onChange={(date) => setStartDate(date)}
-                    showTimeSelect
-                    dateFormat="Pp"
+                <Select
+                    value={selectedTheatreId || undefined}
+                    onChange={setSelectedTheatreId}
+                    placeholder="Select theatre"
+                    loading={theatreLoading}
+                    options={(theatres || []).map(t => ({ value: t._id, label: t.theatreName }))}
                 />
-                <div style={{ margin: "5px 0" }}></div>
-                <Input
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    type="number"
-                    required
-                    placeholder="Price"
-                />
-                <div style={{ margin: "5px 0" }}></div>
-                <Button htmlType="submit">Submit</Button>
+                <DatePicker selected={startDate} onChange={setStartDate} showTimeSelect dateFormat="Pp" />
+                <Input value={price} onChange={(e) => setPrice(e.target.value)} type="number" min="0" placeholder="Price" />
+                <Button htmlType="submit" loading={Boolean(isPending || isLoading)}>Submit</Button>
             </form>
         </>
 

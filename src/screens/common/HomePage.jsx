@@ -1,11 +1,13 @@
 import { useGetAllMovies, useSearchMovies } from "../../hooks/query/movie";
 import { useCurrentUser } from "../../hooks/query/user";
 import { useNavigate } from "react-router-dom"
-import { Col, Row, Card, Spin, Flex, Input, Button, List, Empty, Typography } from 'antd';
+import { Col, Row, Card, Spin, Flex, Input, Button, List, Empty, Typography, Dropdown } from 'antd';
 import { LoadingOutlined, DownOutlined } from '@ant-design/icons';
 import '../../App.css';
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import HomepageProfileMenu from "./HomepageProfileMenu";
+import { useCity } from '../../context/CityContext';
+import { useGetAllCities } from '../../hooks/query/theatre';
 
 const { Meta } = Card;
 const { Search } = Input;
@@ -13,9 +15,11 @@ const { Title } = Typography
 
 const HomePage = () => {
   const { user } = useCurrentUser();
-  const { movies, isLoading: movieLoading } = useGetAllMovies();
   const navigate = useNavigate();
-  const [city, setCity] = useState(null);
+  const { city, setCity } = useCity();
+
+  const { data: cities = [] } = useGetAllCities();
+  const { data: movies = [], isLoading: movieLoading } = useGetAllMovies(city);
 
   const [searchText, setSearchText] = useState('');
   const [debounced, setDebounced] = useState('');
@@ -36,7 +40,7 @@ const HomePage = () => {
   }, [searchText]);
 
   // React Query search
-  const { data: results = [], isFetching } = useSearchMovies(debounced);
+  const { data: results = [], isFetching } = useSearchMovies(debounced, city);
 
   // Immediate search on Enter / Search button
   const handleImmediateSearch = (val) => {
@@ -45,6 +49,22 @@ const HomePage = () => {
     setSearchText(q);      // keep the input in sync
     setDebounced(q);       // trigger search immediately
   };
+
+  const cityMenu = {
+    items: (cities || []).map(c => ({
+      key: c,
+      label: c,
+      onClick: () => {
+        setCity(c);
+        try { localStorage.setItem('city', c); } catch {}
+      }
+    }))
+  };
+
+  const safeMovies = useMemo(() => {
+    if (Array.isArray(movies)) return movies;
+    return movies?.movies ?? movies?.data?.movies ?? [];
+  }, [movies]);
 
   if (movieLoading) {
     return (
@@ -67,7 +87,6 @@ const HomePage = () => {
               style={{ width: "138px", height: "55px", marginTop: "8px" }}
             />
 
-            {/* WIDER SEARCH BAR */}
             <div style={{ maxWidth: 1440, margin: '0 auto 16px', padding: '0 16px' }}>
               <Search
                 placeholder="Search movies by title"
@@ -82,15 +101,17 @@ const HomePage = () => {
           </div>
 
           <div className="header-right">
-            <div className="pointer">
-              {city ? <span>{city}</span> : <span>Your City</span>}
-              <DownOutlined style={{ margin: "0 8px", fontSize: '9px' }} />
-            </div>
+            <Dropdown menu={cityMenu} placement="bottom">
+                <div className="pointer">
+                    <span>{city || 'Delhi'}</span>
+                    <DownOutlined style={{ margin: "0 8px", fontSize: '9px'}}/>
+                </div>
+            </Dropdown>
             <div className="pointer">
               {user?.firstName ?
                 (
                   <div className="profile">
-                    <span><HomepageProfileMenu text={user?.firstName} role={user?.role} /></span>
+                    <span><HomepageProfileMenu user={user} /></span>
                   </div>
                 ) :
                 <Button type="primary" onClick={e => navigate('/signin')} danger>
@@ -105,7 +126,6 @@ const HomePage = () => {
       <main>
         <div className="body-container">
 
-          {/* WHEN SEARCHING: show only results */}
           {debounced ? (
             <div style={{ minHeight: '50vh', display: 'flex', justifyContent: 'center', width: '100%' }}>
               <div style={{ width: '100%', maxWidth: 1200, padding: '0 16px' }}>

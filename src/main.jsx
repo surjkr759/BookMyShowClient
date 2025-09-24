@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import App from './App.jsx'
 import './index.css'
+import { CityProvider } from './context/CityContext.jsx'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +20,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>  
       {/* Now your application is ready to use react query */}
-        <App />
+        <CityProvider>
+          <App />
+        </CityProvider>
         <ReactQueryDevtools />
       </QueryClientProvider>
     </BrowserRouter>
